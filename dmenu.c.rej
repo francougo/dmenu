@@ -1,0 +1,40 @@
+--- dmenu.c
++++ dmenu.c
+@@ -26,14 +26,16 @@
+ #define TEXTW(X)              (drw_fontset_getwidth(drw, (X)) + lrpad)
+ 
+ /* enums */
+-enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
++enum { SchemeNorm, SchemeSel, SchemeHp, SchemeOut, SchemeLast }; /* color schemes */
+ 
+ struct item {
+ 	char *text;
+ 	struct item *left, *right;
+-	int out;
++	int out, hp;
+ };
+ 
++static char **hpitems = NULL;
++static int hplength = 0;
+ static char text[BUFSIZ] = "";
+ static char *embed;
+ static int bh, mw, mh;
+@@ -148,6 +180,8 @@ drawitem(struct item *item, int x, int y, int w)
+ {
+ 	if (item == sel)
+ 		drw_setscheme(drw, scheme[SchemeSel]);
++	else if (item->hp)
++		drw_setscheme(drw, scheme[SchemeHp]);
+ 	else if (item->out)
+ 		drw_setscheme(drw, scheme[SchemeOut]);
+ 	else
+@@ -724,7 +769,8 @@ static void
+ usage(void)
+ {
+ 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+-	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
++	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n"
++		  "             [-hb color] [-hf color] [-hp items]\n", stderr);
+ 	exit(1);
+ }
+ 
